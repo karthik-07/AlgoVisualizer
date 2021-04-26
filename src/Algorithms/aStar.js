@@ -1,51 +1,57 @@
-export function AStar(grid, startNode, endNode) {
-    const visitedNodes = []
-    startNode.distance = 0
-    const unVisitedNodes = getAllNodes(grid)
+// Returns all nodes in the order in which they were visited.
+// Make nodes point back to their previous node so that we can compute the shortest path
+// by backtracking from the finish node.
 
-    while(unVisitedNodes.length) {
-        sortByDistance(unVisitedNodes)
-        const closestNode = unVisitedNodes.shift()
-        //If wall then skip
-        if(!closestNode.isWall) {
-            //If closest node is at infinity then stop
-            if(closestNode.distance === Infinity) return visitedNodes
-            closestNode.isVisited = true
-            visitedNodes.push(closestNode)
-            if(closestNode === endNode) return visitedNodes
-            updateUnvistedNode(closestNode, grid)
-        }
+export function AStar(grid, startNode, finishNode) {
+    const visitedNodesInOrder = [];
+    startNode.distance = 0;
+    const unvisitedNodes = getAllNodes(grid); // Q: different from using grid or slice of grid???
+  
+    while (unvisitedNodes.length) {
+      sortByDistance(unvisitedNodes);
+      const closestNode = unvisitedNodes.shift();
+      // If we encounter a wall, we skip it.
+      if (!closestNode.isWall) {
+        // If the closest node is at a distance of infinity,
+        // we must be trapped and should stop.
+        if (closestNode.distance === Infinity) return visitedNodesInOrder;
+        closestNode.isVisited = true;
+        visitedNodesInOrder.push(closestNode);
+        if (closestNode === finishNode) return visitedNodesInOrder;
+        updateUnvisitedNeighbors(closestNode, grid);
+      }
     }
-}
-
-function getAllNodes(grid) {
-    const nodes = []
-    for(const row of grid){
-        for(const node of row){
-            nodes.push(node)
-        }
+  }
+  
+  function getAllNodes(grid) {
+    const nodes = [];
+    for (const row of grid) {
+      for (const node of row) {
+        nodes.push(node);
+      }
     }
-    return nodes
-}
-
-function sortByDistance(unVisitedNodes) {
-    unVisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance)
-}
-
-function updateUnvistedNode(node, grid) {
-    const unVisitedNeighbours = getUnvisitedNeighbours(node, grid)
-    for(const neighbour of unVisitedNeighbours) {
-        neighbour.distance = node.distance + 1 + neighbour.distanceToNode
-        neighbour.previousNode = node
+    return nodes;
+  }
+  
+  function sortByDistance(unvisitedNodes) {
+    unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
+  }
+  
+  function updateUnvisitedNeighbors(node, grid) {
+    const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
+    for (const neighbor of unvisitedNeighbors) {
+      neighbor.distance = node.distance + 1 + neighbor.distanceToFinishNode;
+      neighbor.previousNode = node;
     }
-}
-
-function getUnvisitedNeighbours(node, grid) {
-    const neighbours = []
-    const {col, row} = node
-    if(row > 0) neighbours.push(grid[row - 1][col])
-    if(row < grid.length - 1) neighbours.push(grid[row + 1][col])
-    if(col > 0) neighbours.push(grid[row][col - 1])
-    if(col < grid[0].length - 1) neighbours.push(grid[row][col + 1])
-    return neighbours.filter(neighbour => !neighbour.isVisited)
-}
+  }
+  
+  function getUnvisitedNeighbors(node, grid) {
+    const neighbors = [];
+    const {col, row} = node;
+    if (row > 0) neighbors.push(grid[row - 1][col]);
+    if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+    if (col > 0) neighbors.push(grid[row][col - 1]);
+    if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+    return neighbors.filter(neighbor => !neighbor.isVisited);
+  }
+  
