@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Node from './Nodes/Node';
 import {AStar} from '../Algorithms/aStar';
+import {Dijkstra} from '../Algorithms/dijkstra'
 import Button from '@material-ui/core/Button';
 
 
@@ -323,6 +324,9 @@ export default class PathFinding extends Component {
         case 'AStar':
           visitedNodesInOrder = AStar(grid, startNode, finishNode);
           break;
+        case 'Dijkstra':
+          visitedNodesInOrder = AStar(grid, startNode, finishNode);
+          break;
         default:
           // should never get here
           break;
@@ -446,6 +450,13 @@ export default class PathFinding extends Component {
           type="button"
           onClick={() => this.visualize('AStar')}>
             A* Algorithm
+        </Button>
+        <Button  variant="outlined"        
+          type="button"
+          className="btn btn-primary"
+          color="primary"
+          onClick={() => this.visualize('Dijkstra')}>
+          Dijkstra's
         </Button>
         {this.state.isDesktopView ? (
             <Button type="button" variant="outlined" onClick={() => this.toggleView()}>Mobile View</Button>
